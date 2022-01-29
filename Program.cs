@@ -17,6 +17,11 @@ namespace UdpSender
                 Console.ReadLine();
                 return;
             }
+            
+            
+            // create endpoint for communication
+            //send stuff using UDP
+            //stop sending when user enters return
             IPEndPoint endpoint = await GetIPEndPointAsync(port, hostname, broadcast, groupAddress, ipv6);
             await SenderAsync(endpoint, broadcast, groupAddress);
             Console.WriteLine("Press return to exit...");
@@ -25,30 +30,41 @@ namespace UdpSender
 
         private static string GetValueForKey(string[] args, string key)
         {
+            //return {arg, index} anon struct collection
+            //select a single value where argument matches the key or null
+            //return the mtaching index after it has been incremented by one or null
             int? nextIndex = args.Select((a, i) => new { Arg = a, Index = i }).SingleOrDefault(a => a.Arg == key)?.Index + 1;
+
             if (!nextIndex.HasValue)
             {
                 return null;
             }
-            return args[nextIndex.Value];
+            return args[nextIndex.Value];  //return the value after the parameter/argument
         }
 
         private static bool ParseCommandLine(string[] args, out int port, out string hostname, out bool broadcast, out string groupAddress, out bool ipv6)
         {
+            //intialise
             port = 0;
             hostname = string.Empty;
             broadcast = false;
             groupAddress = string.Empty;
             ipv6 = false;
+
+            //exit if we don't have have all the args we expect
             if (args.Length < 2 || args.Length > 5)
             {
                 return false;
             }
+
+            //exit if no port is suppolied
             if (args.SingleOrDefault(a => a == "-p") == null)
             {
                 Console.WriteLine("-p required");
                 return false;
             }
+
+            //exit if none of broacast,  multicast group,  hostname are supplied
             string[] requiredOneOf = { "-h", "-b", "-g" };
             if (args.Intersect(requiredOneOf).Count() != 1)
             {
@@ -86,6 +102,7 @@ namespace UdpSender
 
         public static async Task<IPEndPoint> GetIPEndPointAsync(int port, string hostName, bool broadcast, string groupAddress, bool ipv6)
         {
+            // create an endpoint which meet the requirements indicated by the algorithm
             IPEndPoint endpoint = null;
             try
             {
@@ -134,6 +151,14 @@ namespace UdpSender
         {
             try
             {
+                //get IP from hostname
+                //create a udp client
+                //enable broadcast if specified
+                //join multicast group if specified
+                //prompt user to enter a message or bye to exit
+                //create a datagram from the message entered
+                //send the datagram down the end point until bye is entered
+                //leave multicast group if specified
                 string localhost = Dns.GetHostName();
                 using (var client = new UdpClient())
                 {
