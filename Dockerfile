@@ -16,3 +16,6 @@ WORKDIR /app
 
 COPY --from=build-env /app/out .
 ENTRYPOINT [ "dotnet","UdpSender.dll" ]
+
+#docker run -it --rm nosirromd/udpsender-img -h host.docker.internal -p 10742
+#https://dev.to/natterstefan/docker-tip-how-to-get-host-s-ip-address-inside-a-docker-container-5anh
